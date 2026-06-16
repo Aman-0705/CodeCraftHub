@@ -294,6 +294,45 @@ def update_or_delete_course():
 
         return jsonify({"message": "Deleted", "deleted": removed}), 200
 
+# GET /api/courses/stats
+# GET /api/courses/stats/
+@app.route("/api/courses/stats", methods=["GET"])
+@app.route("/api/courses/stats/", methods=["GET"])
+def courses_stats():
+    """
+    Return simple statistics about the courses:
+    - total: total number of courses
+    - by_status: counts per status
+        - Not Started
+        - In Progress
+        - Completed
+    """
+    try:
+        courses = load_courses()
+    except Exception:
+        return error_response("Failed to read data file.", 500)
+
+    total = len(courses)
+
+    by_status = {
+        "Not Started": 0,
+        "In Progress": 0,
+        "Completed": 0
+    }
+
+    # Count courses by their status
+    for c in courses:
+        status = c.get("status")
+        if status in by_status:
+            by_status[status] += 1
+        # If a course has an unknown status, we ignore it in this simple stats view
+
+    stats = {
+        "total": total,
+        "by_status": by_status
+    }
+
+    return jsonify(stats), 200
 
 # Optional: root health check
 @app.route("/", methods=["GET"])
