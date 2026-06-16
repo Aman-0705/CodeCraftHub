@@ -2,6 +2,7 @@ import os
 import json
 import threading
 from datetime import datetime
+from flask_cors import CORS
 
 from flask import Flask, request, jsonify
 
@@ -114,7 +115,7 @@ def error_response(message, status_code=400):
 # Flask app initialization
 # ----------------------------
 app = Flask(__name__)
-
+CORS(app)
 # Ensure the data store exists on startup
 ensure_data_store()
 
@@ -344,4 +345,8 @@ def root():
 # Run the app
 # ----------------------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )
